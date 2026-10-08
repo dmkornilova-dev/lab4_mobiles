@@ -1,8 +1,8 @@
-package com.example.myapplicationlist.repository
+package com.example.lab4.repository
 
 import androidx.lifecycle.MutableLiveData
-import com.example.myapplicationlist.data.Faculty
-import com.example.myapplicationlist.data.ListOfFaculty
+import com.example.lab4.data.Faculty
+import com.example.lab4.data.ListOfFaculty
 
 class MainRepository private constructor(){
 
@@ -59,4 +59,7 @@ class MainRepository private constructor(){
         setCurrentFaculty(listOfFaculty.value?.items!![position])
     }
 
-    fun setCurrentFaculty(
+    fun setCurrentFaculty(_faculty: Faculty) {
+        faculty.postValue(_faculty)
+    }
+}
