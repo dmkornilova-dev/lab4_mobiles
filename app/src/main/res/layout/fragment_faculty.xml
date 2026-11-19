@@ -12,6 +12,7 @@
         android:text="@string/hello_blank_fragment" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFaculty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:ignore="MissingClass" />
