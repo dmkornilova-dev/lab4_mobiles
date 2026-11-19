@@ -1,10 +1,13 @@
 package com.example.lab4.fragments
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import com.example.lab4.R
 import com.example.lab4.appViewModel.FacultyViewModel
 import com.example.lab4.databinding.FragmentFacultyBinding
@@ -13,6 +16,7 @@ import com.example.lab4.data.Faculty
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.lab4.MainActivity
 
 //// TODO: Rename parameter arguments, choose names that match
 //// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -66,7 +70,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 //    }
 //}
 
-class FacultyFragment : Fragment() {
+class FacultyFragment : Fragment(), MainActivity.Edit {
     companion object {
         private var INSTANCE: FacultyFragment? = null
 
@@ -100,6 +104,43 @@ class FacultyFragment : Fragment() {
         viewModel.facultyList.observe(viewLifecycleOwner) {
             binding.rvFaculty.adapter = FacultyAdapter(it?.items ?: emptyList())
         }
+    }
+
+    override fun append() {
+        editFaculty()
+    }
+
+    override fun update() {
+        editFaculty(viewModel.faculty?.name ?:"")
+    }
+
+    override fun delete() {
+        deleteDialog()
+    }
+
+    private fun deleteDialog() {
+        AlertDialog.Builder(requireContext()).setTitle("Удаление!").setMessage("Вы действительно хотите удалить факультет ${viewModel.faculty?.name ?:""}?")
+            .setPositiveButton("ДА") { _, _ ->
+                viewModel.deleteFaculty()
+            }.setNegativeButton("НЕТ", null).setCancelable(true).create().show()
+    }
+
+    private fun editFaculty(facultyName : String=""){
+        val mDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_string, null)
+        val messageText= mDialogView.findViewById<TextView>(R.id.tvInfo)
+        val inputString= mDialogView.findViewById<EditText>(R.id.etString)
+        inputString.setText(facultyName)
+        messageText.text="Укажите наименование факультета"
+
+        AlertDialog.Builder(requireContext()).setTitle("ИЗМЕНЕНИЕ ДАННЫХ").setView(mDialogView).setPositiveButton("подтверждаю") { _, _ ->
+            if (inputString.text.isNotBlank()) {
+                if (facultyName.isBlank())
+                    viewModel.appendFaculty(inputString.text.toString())
+                else
+                    viewModel.updateFaculty(inputString.text.toString())
+            }
+        }
+            .setNegativeButton("отмена", null).setCancelable(true).create().show()
     }
 
     private inner class FacultyAdapter(private val items: List<Faculty>) :
