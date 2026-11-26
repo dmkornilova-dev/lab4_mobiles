@@ -14,61 +14,11 @@ import com.example.lab4.databinding.FragmentFacultyBinding
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lab4.data.Faculty
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lab4.MainActivity
-
-//// TODO: Rename parameter arguments, choose names that match
-//// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//private const val ARG_PARAM1 = "param1"
-//private const val ARG_PARAM2 = "param2"
-//
-///**
-// * A simple [Fragment] subclass.
-// * Use the [FacultyFragment.newInstance] factory method to
-// * create an instance of this fragment.
-// */
-//class FacultyFragment : Fragment() {
-//    // TODO: Rename and change types of parameters
-//    private var param1: String? = null
-//    private var param2: String? = null
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
-//    }
-//
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.fragment_faculty, container, false)
-//    }
-//
-//    companion object {
-//        /**
-//         * Use this factory method to create a new instance of
-//         * this fragment using the provided parameters.
-//         *
-//         * @param param1 Parameter 1.
-//         * @param param2 Parameter 2.
-//         * @return A new instance of fragment FacultyFragment.
-//         */
-//        // TODO: Rename and change types and number of parameters
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            FacultyFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
-//}
 
 class FacultyFragment : Fragment(), MainActivity.Edit {
     companion object {
@@ -160,6 +110,18 @@ class FacultyFragment : Fragment(), MainActivity.Edit {
             holder.bind(viewModel.facultyList.value!!.items[position])
         }
 
+        private var lastView: View? = null
+
+        private fun updateCurrentView(view: View) {
+            lastView?.findViewById<ConstraintLayout>(R.id.clElement)?.setBackgroundColor(
+                ContextCompat.getColor(requireContext(), R.color.rvBackground)
+            )
+            view.findViewById<ConstraintLayout>(R.id.clElement).setBackgroundColor(
+                ContextCompat.getColor(requireContext(), R.color.rvSelectedElement)
+            )
+            lastView = view
+        }
+
         private inner class ItemHolder(view: View) : RecyclerView.ViewHolder(view) {
             private lateinit var faculty: Faculty
 
@@ -167,7 +129,18 @@ class FacultyFragment : Fragment(), MainActivity.Edit {
                 this.faculty = faculty
                 val tv = itemView.findViewById<TextView>(R.id.tvElement)
                 tv.text = faculty.name
+                if (faculty == viewModel.faculty)
+                    updateCurrentView(itemView)
+                else
+                    itemView.findViewById<ConstraintLayout>(R.id.clElement).setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), R.color.rvBackground)
+                    )
+                itemView.findViewById<ConstraintLayout>(R.id.clElement).setOnClickListener {
+                    viewModel.setCurrentFaculty(faculty)
+                    updateCurrentView(itemView)
+                }
             }
         }
     }
+
 }
